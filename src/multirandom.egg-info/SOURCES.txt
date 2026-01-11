@@ -1,11 +1,11 @@
 LICENSE
 README.md
 pyproject.toml
+src/multirandom.egg-info/PKG-INFO
+src/multirandom.egg-info/SOURCES.txt
+src/multirandom.egg-info/dependency_links.txt
+src/multirandom.egg-info/top_level.txt
 src/realrandom/__init__.py
-src/realrandom.egg-info/PKG-INFO
-src/realrandom.egg-info/SOURCES.txt
-src/realrandom.egg-info/dependency_links.txt
-src/realrandom.egg-info/top_level.txt
 src/realrandom/hash_rand/__init__.py
 src/realrandom/hash_rand/original_random.py
 src/realrandom/hash_rand/sha_rand.py
