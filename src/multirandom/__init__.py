@@ -1,3 +1,3 @@
-import true_rand
-import virt_rand
-import hash_rand
+from . import true_rand
+from . import virt_rand
+from . import hash_rand

@@ -1,2 +1,2 @@
-import original_random
-import sha_rand as sha_random
+from . import original_random
+from . import sha_rand as sha_random
