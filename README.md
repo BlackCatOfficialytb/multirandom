@@ -1,10 +1,10 @@
-# RealRandom 🎲
+# MultiRandom 🎲
 
 A comprehensive library for exploring and generating randomness across the spectrum—from true physical entropy to mathematical pseudo-randomness and everything in between.
 
 ## 🌟 Overview
 
-RealRandom is designed for developers, researchers, and hobbyists who want to understand high-quality randomness. It provides tools to fetch random data from quantum sources, physical human interaction, and modern mathematical algorithms.
+MultiRandom is designed for developers, researchers, and hobbyists who want to understand high-quality randomness. It provides tools to fetch random data from quantum sources, physical human interaction, and modern mathematical algorithms.
 
 > [!WARNING]
 > **Security Note**: This library contains both "True" and "Pseudo" random sources. While some sources (like QRNG) are highly secure, others (like LCGs) are provided for educational purposes and include **reverse logic** to demonstrate their insecurity. Always use the appropriate generator for your use case.
@@ -14,7 +14,7 @@ RealRandom is designed for developers, researchers, and hobbyists who want to un
 ## 🏗 Project Structure
 
 ```text
-realrandom/
+MultiRandom/
 ├── true_rand/          # Physical & Hardware Entropy
 │   ├── rand_via_clicks.py       # Human-in-the-loop entropy (Left/Right/Middle/Mixed)
 │   └── rand_using_online_api.py # Quantum & Hardware APIs (random.org, ANU QRNG, Roll-API)
@@ -34,10 +34,10 @@ realrandom/
 Uses `pyautogui` and Windows API to capture sub-microsecond timing jitter and spatial coordinates from physical mouse clicks.
 
 ```python
-from true_rand.rand_via_clicks import RealRandomUsingBetweenMixedClicks
+from true_rand.rand_via_clicks import MultiRandomUsingBetweenMixedClicks
 
 # Requires a sequence of Left -> Right -> Middle clicks to seed
-gen = RealRandomUsingBetweenMixedClicks()
+gen = MultiRandomUsingBetweenMixedClicks()
 print(gen.random())
 ```
 
