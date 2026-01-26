@@ -1,4 +1,5 @@
-_sha1 = None
+import random
+sha1 = None
 _sha224 = None
 _sha256 = None
 _sha384 = None
@@ -50,9 +51,11 @@ def _get_sha512():
             # fallback to official implementation
             from hashlib import sha512 as _sha512
     return _sha512
-class _SHARandom:
+class _SHARandom(random.Random):
     def __init__(self, seed=None):
-        self.seed = seed
+        if seed is None:
+            seed = random.getrandbits(64)
+        super().__init__(seed)
         self.counter = 0
 
     def _get_hash(self):

@@ -3,7 +3,7 @@ import asyncio
 
 async def fetch_random_org_integers(num: int = 1, min_val: int = 1, max_val: int = 100):
 	"""Fetches true random integers from random.org using their plain text API."""
-	url = "https://www.random.org/integers/"
+	url = "https://www.random.org/integers/?"
 	params = {
 		"num": num,
 		"min": min_val,
