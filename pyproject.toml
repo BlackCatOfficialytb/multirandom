@@ -1,17 +1,17 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "multirandom"
-version = "0.0.4"
+version = "0.0.6"
 authors = [
   { name="BlackCatOfficialytb", email="quanvm0501@gmail.com" },
 ]
-description = "🎲 The truth external PyPI random package, have true_rand, virt_rand, hash_rand, ..."
+description = "🎲 The truth external PyPI random package, have trng (true randomness), prng_unsecure, csprng, ..."
 readme = "README.md"
 requires-python = ">=3.9"
-license = "GPL-3.0-or-later"
+license = { text = "Apache-2.0" }
 classifiers = [
     "Programming Language :: Python :: 3.9",
     "Operating System :: OS Independent",
@@ -21,6 +21,10 @@ dependencies = [
 	  "pyautogui",
     "geopy"
 ]
+
+[project.optional-dependencies]
+# Microphone entropy source; heavy (numpy + PortAudio), so opt-in.
+microphone = ["real-random>=0.1.1"]
 
 [project.urls]
 "Homepage" = "https://github.com/BlackCatOfficialytb/multirandom"

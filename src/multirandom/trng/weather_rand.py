@@ -245,7 +245,7 @@ class RandomUsingOpenMeteoAPI(random.Random):
             ))
             
             # Mix with original random module's entropy via SHA256
-            from ..hash_rand.sha_rand import SHA256Random
+            from ..csprng.sha_rand import SHA256Random
             import time
             import os
             
