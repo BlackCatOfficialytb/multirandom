@@ -1,8 +1,14 @@
-"""multirandom - one random-number package, several philosophies of chance.
+"""
+Project: https://pypi.org/project/multirandom/
+Repo: https://github.com/BlackCatOfficialytb/multirandom
+License: Apache 2.0
+Module: multirandom
+Description:
+One random-number package, several philosophies of chance:
 
-* ``prng_unsecure/`` - educational PRNGs that must never guard anything (LCGs, xorshift).
-* ``csprng/``       - cryptographically strong generators (OS entropy, NIST DRBGs, stream ciphers).
 * ``trng/``         - true/hardware entropy sources (microphones, weather, clicks, online APIs).
+* ``csprng/``       - cryptographically strong generators (OS entropy, NIST DRBGs, stream ciphers).
+* ``prng_unsecure/`` - educational PRNGs that must never guard anything (LCGs, xorshift).
 
 Everything in ``prng_unsecure/`` and the deliberately broken ``Dual_EC_DRBG`` warns the
 first time it is used. Those warnings are controlled by ONE global variable::

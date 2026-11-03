@@ -1,3 +1,27 @@
+"""
+Project: https://pypi.org/project/multirandom/
+Repo: https://github.com/BlackCatOfficialytb/multirandom
+License: Apache 2.0
+Module: multirandom.prng_unsecure.xor_shift
+Description:
+The 18-generator XorShift / Xoshiro / Xoroshiro family (Marsaglia, Vigna):
+Xorshift32/64/128, Xorwow (CUDA), XorshiftStar & Xorshift1024Star (Vigna),
+XorshiftPlus (V8/WebKit), the Xoshiro256* / Xoshiro128* variants, and the
+Xoroshiro64* / Xoroshiro128* variants (Minecraft Java 1.18+ uses Xoroshiro128++).
+Core method ``roll()`` -- one register step, one output. Register-width classes
+take a ``seed`` int; the multi-word classes take a ``seeds`` list (OS entropy
+generates one when omitted). The module's assert battery reproduces the output
+of the official C reference implementations for fixed seeds.
+
+Because every step is linear over GF(2), the state is fully reversible. Xorshift32
+ships four equivalent attacks side by side -- reverse_roll() (fixed-shift
+feedback), reverse_roll_increments() (XOR the final value at s, 2s, 3s, ...),
+reverse_roll_doubling() (XOR the intermediate value at s, 2s, 4s, ...) and
+reverse_roll_matrix() (GF(2) matrix inversion) -- plus standalone helpers
+reverse_xor_lshift/rshift, increments_xor_lshift/rshift, doubling_xor_lshift/rshift
+and gf2_inverse_matrix. Insecure for cryptography: constructing any generator
+warns once per process via the package's global warning flag.
+"""
 import functools
 import inspect
 import random

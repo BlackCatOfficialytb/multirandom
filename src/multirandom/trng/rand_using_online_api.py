@@ -1,3 +1,17 @@
+"""
+Project: https://pypi.org/project/multirandom/
+Repo: https://github.com/BlackCatOfficialytb/multirandom
+License: Apache 2.0
+Module: multirandom.trng.rand_using_online_api
+Description:
+True randomness from remote physical processes, over aiohttp:
+fetch_random_org_integers() - random.org atmospheric noise (plain-text API,
+range-filterable integers); fetch_qrng_anu_integers() - the Australian National
+University QRNG, quantum vacuum shot noise returning uint8 values;
+fetch_roll_api_result() - TheLastGimbus Roll-API, a physical dice-rolling
+robot. Plain Python return values (no random.Random wrapper); every endpoint
+is best-effort and may return [] / None when unreachable.
+"""
 import aiohttp
 import asyncio
 

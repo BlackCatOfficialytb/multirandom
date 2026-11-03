@@ -1,5 +1,10 @@
-"""Ambient-microphone entropy via the optional `real-random` package.
-
+"""
+Project: https://pypi.org/project/multirandom/
+Repo: https://github.com/BlackCatOfficialytb/multirandom
+License: Apache 2.0
+Module: multirandom.trng.rand_using_real_random
+Description:
+Ambient-microphone entropy via the optional `real-random` package.
 `real-random` (https://pypi.org/project/real-random/) records 1-2 seconds of
 microphone audio, hashes it with SHA-256 and turns the hash into random values.
 Install the optional dependency with:

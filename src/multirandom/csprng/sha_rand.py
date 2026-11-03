@@ -1,4 +1,10 @@
-"""Hash-based pseudo-random generators.
+"""
+Project: https://pypi.org/project/multirandom/
+Repo: https://github.com/BlackCatOfficialytb/multirandom
+License: Apache 2.0
+Module: multirandom.csprng.sha_rand
+Description:
+Hash-based pseudo-random generators.
 
 Each generator runs a counter through a cryptographic hash: H(seed || counter).
 This is the classic counter-mode hash DRBG construction (the same idea as NIST's

@@ -1,3 +1,19 @@
+"""
+Project: https://pypi.org/project/multirandom/
+Repo: https://github.com/BlackCatOfficialytb/multirandom
+License: Apache 2.0
+Module: multirandom.trng.rand_via_clicks
+Description:
+Human-in-the-loop entropy: seeds a Mersenne Twister from the nanosecond-scale
+timing jitter between mouse clicks plus the cursor positions at click time
+(Win32 GetAsyncKeyState button polling + pyautogui cursor reading).
+RealRandomUsingBetweenLeftClicks / ...BetweenRightClicks / ...BetweenMiddleClicks
+need two clicks of their button to seed; RealRandomUsingBetweenMixedClicks needs
+a Left -> Right -> Middle sequence. Construction blocks until you click them;
+passing an explicit seed skips the interaction. Helpers is_left_click_pressed /
+is_right_click_pressed / is_middle_click_pressed and
+get_click_data(button_check_func) -> (perf_counter timestamp, cursor position).
+"""
 import pyautogui
 import time
 import ctypes

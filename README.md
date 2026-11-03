@@ -11,6 +11,20 @@ A comprehensive library for exploring and generating randomness across the spect
 
 ---
 
+## 📚 Full Documentation
+
+Deep-dive docs live in [`docs/`](docs/):
+
+| Page | Contents |
+|---|---|
+| [Getting started](docs/getting-started.md) | installation, quickstart, which generator to pick |
+| [True randomness (`trng`)](docs/trng.md) | mouse clicks, quantum APIs, microphone, weather |
+| [Cryptographic randomness (`csprng`)](docs/csprng.md) | OS CSPRNGs, NIST DRBGs, the Dual_EC backdoor demo, Fortuna/ISAAC |
+| [Unsecure PRNGs (`prng_unsecure`)](docs/prng_unsecure.md) | XorShift/Xoshiro, LCGs, and their reversal attacks |
+| [Self-checks](docs/self-checks.md) | the assert batteries verifying every generator |
+
+---
+
 ## 🏗 Project Structure
 
 ```text
@@ -21,7 +35,7 @@ multirandom/
         │   ├── rand_via_clicks.py        # Human-in-the-loop entropy
         │   ├── rand_using_online_api.py  # Quantum & Hardware APIs (ANU QRNG, Roll-API)
         │   ├── rand_using_real_random.py # Microphone entropy (real-random)
-        │   └── weather_rand.py           # [Coming Soon] Weather-based entropy
+        │   └── weather_rand.py           # Open-Meteo weather entropy (large unhashed seeds)
         ├── csprng/             # Cryptographically Strong Randomness
         │   ├── secure_rand.py            # OS CSPRNGs, NIST DRBGs, Fortuna/Yarrow, ISAAC
         │   ├── sha_rand.py               # MD5, SHA-1/2/3, BLAKE2, SHAKE PRNGs

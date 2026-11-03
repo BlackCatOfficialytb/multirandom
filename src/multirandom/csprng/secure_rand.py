@@ -1,4 +1,10 @@
-"""Cryptographic random generators ("csprng").
+"""
+Project: https://pypi.org/project/multirandom/
+Repo: https://github.com/BlackCatOfficialytb/multirandom
+License: Apache 2.0
+Module: multirandom.csprng.secure_rand
+Description:
+Cryptographic random generators ("csprng").
 
 Three families live in this module:
 

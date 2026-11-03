@@ -1,3 +1,21 @@
+"""
+Project: https://pypi.org/project/multirandom/
+Repo: https://github.com/BlackCatOfficialytb/multirandom
+License: Apache 2.0
+Module: multirandom.prng_unsecure.rand_using_virt_lcg
+Description:
+Linear Congruential Generators exactly as the textbooks write them. The class
+`LCGs` takes user-supplied formulas acting on the state s: `rules` for the
+forward step (e.g. "(s * a + c) % d") and the optional `reverse_rules` for the
+inverse step (e.g. "((s - c) * pow(a, -1, d)) % d"), with parameters a/b/c/d
+(defaults 10 / 3 / 5 / 25565) and a randomised state by default. roll()
+advances the state, reverse_roll() walks it backwards -- demonstrating the
+insecurity of simple modular arithmetic: with a few consecutive outputs, state
+(and every past and future output) is recoverable via the modular
+multiplicative inverse, so a and d must be coprime for reversal to exist.
+Intended for offline games/education, NOT cryptography; the class warns once
+per process, governed by the package's global warning flag.
+"""
 import random
 import warnings
 
