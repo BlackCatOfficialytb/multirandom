@@ -44,6 +44,7 @@ bounds, 100 KB bit balance, `getstate()`/`setstate()` round-trip.
 
 ```bash
 py -3 -m multirandom.prng_unsecure.xor_shift
+py -3 -m multirandom.prng_unsecure.mersenne_twister
 py -3 -m multirandom.prng_unsecure.flash_player_prng      # ~10 s (runs the real attack)
 ```
 
@@ -72,6 +73,20 @@ That walks through:
    the stream correctly
 6. **the warning switch** — one warning per process, silenced by the global
    flag
+
+`mersenne_twister` adds:
+
+1. **official vector** — `init_genrand(5489)` reproduces the canonical
+   10-output sequence
+2. **CPython parity** — `from_key` streams equal `random.Random(n)`
+   (`getrandbits(32)` and `random()`) for 9 int seeds, incl. multi-word ones
+3. **10k draws** — deterministic, on the 32-bit grid, seed-sensitive;
+   10k `genrand_res53` doubles in [0, 1)
+4. **state round-trip** — `getstate()`/`setstate()` (plus bogus-state
+   rejection)
+5. **temper ⇄ untemper** — full 32-bit bijection over 30k samples + edges
+6. **the 624-output clone** — the state is recovered from any consecutive
+   window (5 strided starts tested) and predicts 300 future draws each time
 
 ## Interactive / networked modules
 

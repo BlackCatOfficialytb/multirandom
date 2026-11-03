@@ -62,7 +62,48 @@ Standalone helpers are exported too: `reverse_xor_lshift` /
 `reverse_xor_rshift`, `increments_xor_lshift` / `increments_xor_rshift`,
 `doubling_xor_lshift` / `doubling_xor_rshift`, and `gf2_inverse_matrix`.
 
-## LCGs — `rand_using_virt_lcg`
+## Mersenne Twister — `mersenne_twister`
+
+The MT19937 from Matsumoto & Nishimura's `mt19937ar.c` — the PRNG that has
+driven Python's `random` module for two decades — rebuilt together with the
+textbook attack that kills it after 624 observed outputs.
+
+```python
+from multirandom.prng_unsecure.mersenne_twister import MersenneTwister
+
+gen = MersenneTwister(5489)              # the classic Knuth init
+print(gen.roll())                        # genrand_int32: one tempered word
+print(gen.random())                      # genrand_res53: 53-bit double
+
+cp = MersenneTwister.from_key([5489])    # init_by_array: CPython-compatible
+```
+
+`from_key` reproduces `random.Random(n)` streams byte-for-byte (the module
+battery checks 9 int seeds, including multi-word ones). The state indexes and
+masks match CPython's, so `getstate()`/`setstate()` speak the same layout.
+
+### The attack — 624 outputs are the whole state
+
+The tempering `(y>>11) ^ (y<<7 & 0x9d2c5680) ^ (y<<15 & 0xefc60000) ^ (y>>18)`
+is XOR-linear, **not a hash**: `untemper()` inverts it in microseconds, and 624
+untempered outputs *are* the internal state — no matter where the 624-window
+starts (the battery clones from strided windows and predicts 300 future draws
+each time).
+
+```python
+from multirandom.prng_unsecure.mersenne_twister import (
+    MersenneTwister, clone_rng_from_outputs, untemper,
+)
+
+clone = clone_rng_from_outputs(observed_words)   # the real generator, cloned
+print(clone.roll())                              # the true next draw, forever
+print(hex(untemper(observed_words[0])))          # one state word, from one output
+```
+
+Recovers, predicts and replays a stream of period 2^19937 — the reason a
+one-way CSPRNG (see [csprng](csprng.md)) exists at all.
+
+## LCGs — `lcg`
 
 `LCGs` implements linear congruential generators exactly as they are written
 in textbooks: the forward formula is user-supplied, so nothing is hidden.
@@ -75,7 +116,7 @@ in textbooks: the forward formula is user-supplied, so nothing is hidden.
 | `a`, `b`, `c`, `d` | multiplier / legacy slot / increment / modulus (defaults 10 / 3 / 5 / 25565) |
 
 ```python
-from multirandom.prng_unsecure.rand_using_virt_lcg import LCGs
+from multirandom.prng_unsecure.lcg import LCGs
 
 # (a, d) must be coprime for the modular multiplicative inverse to exist:
 g = LCGs("(s * a + c) % d", "((s - c) * pow(a, -1, d)) % d",
@@ -147,14 +188,13 @@ With the state back, Flash's constant blinding — the anti-JIT-spraying
 mitigation the PRNG was built for — dies with it. `match_target(state,
 rounds, target)` verifies candidates the way the exploit does.
 
-## Coming soon
-
-`flash_rand_and_reverse.py` remains the placeholder it always was (it prints
-`coming soon :/`); the working Flash Player PRNG and its reversal attacks live
-in `flash_player_prng.py` above, and further specialized PRNGs will land in
-its own module when ready.
+`flash_rand_and_reverse.py` (the old placeholder) is gone from the tree; the
+working Flash Player PRNG and its reversal attacks live in
+`flash_player_prng.py` above.
 
 ## Where to go next
 
 - [Cryptographic randomness (`csprng`)](csprng.md) — what to use where it matters
-- [Self-checks](self-checks.md) — `py -3 -m multirandom.prng_unsecure.xor_shift` verifies all 18 generators
+- [Self-checks](self-checks.md) — `py -3 -m multirandom.prng_unsecure.xor_shift` verifies all
+  18 generators; `...mersenne_twister` clones MT19937; `...flash_player_prng` runs the real
+  CVE-2017-3000 attack

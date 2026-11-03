@@ -2,7 +2,7 @@
 Project: https://pypi.org/project/multirandom/
 Repo: https://github.com/BlackCatOfficialytb/multirandom
 License: Apache 2.0
-Module: multirandom.prng_unsecure.rand_using_virt_lcg
+Module: multirandom.prng_unsecure.lcg
 Description:
 Linear Congruential Generators exactly as the textbooks write them. The class
 `LCGs` takes user-supplied formulas acting on the state s: `rules` for the
