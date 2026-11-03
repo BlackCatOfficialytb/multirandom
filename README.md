@@ -43,6 +43,7 @@ multirandom/
         └── prng_unsecure/      # Mathematical Randomness (UNSECURE PRNGs)
             ├── xor_shift.py              # XorShift & Xoshiro Family
             ├── rand_using_virt_lcg.py    # Linear Congruential Generators (LCGs)
+            ├── flash_player_prng.py      # Flash Player Math.random() + its reversal attacks
             └── flash_rand_and_reverse.py # [Coming Soon] Specialized PRNGs
 ```
 

@@ -44,6 +44,7 @@ bounds, 100 KB bit balance, `getstate()`/`setstate()` round-trip.
 
 ```bash
 py -3 -m multirandom.prng_unsecure.xor_shift
+py -3 -m multirandom.prng_unsecure.flash_player_prng      # ~10 s (runs the real attack)
 ```
 
 That walks through:
@@ -55,6 +56,22 @@ That walks through:
    all undo `Xorshift32`, for every seed up to 64 and every shift/width
 4. **all 18 generators** — distinct outputs within 64 rolls, surviving
    all-zero seeds
+
+`flash_player_prng` adds:
+
+1. **structural constants** — XOR mask, 31-bit `kRandomPureMax`, the `* 71`,
+   the obfuscated polynomial constants and the `60492497` magic, each checked
+   against the avmplus source or its arithmetic identity
+2. **7 known vectors** — exact streams for fixed `u_value`s, including the
+   `u_value == 0` degenerate fixed point
+3. **10k draws** — always on the 31-bit grid, deterministic, state-sensitive
+4. **kernel roundtrips** — `poly^-1` (bit-reversal DFS) and `*71^-1`
+   (`solve_multi_reverse`) return their true inputs
+5. **the CVE-2017-3000 chain** — `recover_state_from_output` rebuilds
+   `0x12345678` (and its LFSR twin) from ONE draw `0x39f5743c`, then predicts
+   the stream correctly
+6. **the warning switch** — one warning per process, silenced by the global
+   flag
 
 ## Interactive / networked modules
 

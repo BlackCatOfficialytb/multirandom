@@ -91,9 +91,68 @@ keeps the one-way mask off deliberately. Given a few consecutive outputs, the
 state (and hence every past and future output) can always be recovered via the
 modular multiplicative inverse; the module just makes the recovery explicit.
 
+## Flash Player — `flash_player_prng`
+
+A verbatim re-implementation of Adobe Flash Player's `Math.random()` PRNG —
+the avmplus `core/MathUtils.cpp` pipeline (`RandomFastNext` →
+`RandomPureHasher` → `GenerateRandomNumber`), including the reversal attacks
+that ended it, transcribed from the working exploit.
+
+The generator: a 32-bit LFSR state `u_value` (XOR mask `0x48000000`, a
+maximal `2^31 − 1` sequence) is stepped, multiplied by the prime 71, hashed
+twice through `((x << 13) ^ x) − (x >> 21)` around Flash's obfuscated
+third-order polynomial (`0x3d73` / `0xc0ae5` / `0x2df722f3`), and cut to its
+low 31 bits — so at most ~`2^31` distinct values exist and the state hides
+nothing.
+
+```python
+from multirandom.prng_unsecure.flash_player_prng import FlashPRNGSimulator
+
+sim = FlashPRNGSimulator(0x12345678)
+print(sim.generate_random_number())   # one Math.random() draw, 31 bits
+print(sim.random())                   # the real float: draw / 2**31
+```
+
+### The attack — one observed value recovers the full state
+
+The reversal kernels are transcribed verbatim from
+[CVE-2017-3000](https://github.com/dangokyo/CVE-2017-3000)'s `Exploiter.as`
+and invert the pipeline one stage at a time, from the observed constant
+backwards:
+
+| Pipeline stage | Kernel |
+|---|---|
+| outer XOR-shift wrap | `solve_hash_reverse` |
+| the polynomial | `solve_bit_reverse` (bit-by-bit DFS — every bit *k* of `poly` depends only on input bits ≤ *k*) |
+| inner XOR-shift wrap | `solve_hash_reverse` |
+| the `* 71` | `solve_multi_reverse` (`71 * 60492497 == 2^32 − 9`) |
+
+`recover_state_from_output` wires the chain together with the exploit's
+`matchTarget`-style forward verification (~`2^21` loop steps per
+hash-reversal, the CVE's original speed; [eprint
+2019/086](https://eprint.iacr.org/2019/086) trims the same pipeline to
+O(2^11)):
+
+```python
+states = recover_state_from_output(0x39F5743C, next_output=0x5C477E4E)
+print([hex(s) for s in states])
+# ['0x82345679', '0x12345678'] - stream-identical LFSR twins
+
+future = FlashPRNGSimulator(states[-1])
+print([hex(future.generate_random_number()) for _ in range(3)])
+# ['0x39f5743c', '0x5c477e4e', '0x40e12d70'] - the whole future stream
+```
+
+With the state back, Flash's constant blinding — the anti-JIT-spraying
+mitigation the PRNG was built for — dies with it. `match_target(state,
+rounds, target)` verifies candidates the way the exploit does.
+
 ## Coming soon
 
-`flash_rand_and_reverse.py` — specialized PRNGs (placeholder in the tree).
+`flash_rand_and_reverse.py` remains the placeholder it always was (it prints
+`coming soon :/`); the working Flash Player PRNG and its reversal attacks live
+in `flash_player_prng.py` above, and further specialized PRNGs will land in
+its own module when ready.
 
 ## Where to go next
 
