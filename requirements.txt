@@ -1,3 +1,4 @@
 pyautogui
 aiohttp
 geopy
+pycryptodome>=3.0
