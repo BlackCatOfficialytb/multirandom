@@ -258,6 +258,19 @@ class MersenneTwister:
         self._mt = [word & _M32 for word in words]
         self._index = index
 
+    @classmethod
+    def from_outputs(cls, outputs) -> "MersenneTwister":
+        """The attack, as an API: build the generator behind the leak.
+
+        ``outputs``: >= 624 consecutive tempered 32-bit draws observed from
+        the victim (any window, aligned or not) -- e.g.
+        ``[victim.roll() for _ in range(624)]`` scraped from a service
+        seeding ``random.Random``. Returns a :class:`MersenneTwister` whose
+        every future draw equals the victim's, then and forever. Same engine
+        as :func:`clone_rng_from_outputs` (kept for the module-level name).
+        """
+        return clone_rng_from_outputs(outputs)
+
 
 # --- THE attack: 624 outputs are the whole state -----------------------------
 
@@ -411,6 +424,12 @@ if __name__ == "__main__":
     assert [sim.roll() for _ in range(624)] == stream[MT_N:2 * MT_N], \
         "state recovery lost the 2^19937 continuation"
     assert predict_from_outputs(stream[:MT_N], 5) == stream[MT_N:MT_N + 5]
+    # the .from_outputs() classmethod API (the leak -> clone attack)
+    victim = MersenneTwister(0xDEADBEEF)
+    first = [victim.roll() for _ in range(650)]       # the leak
+    future = [victim.roll() for _ in range(200)]      # the real future
+    cloned = MersenneTwister.from_outputs(first)
+    assert [cloned.roll() for _ in range(200)] == future, "from_outputs clone diverged"
     print("[8] 624 observed words -> exact state; ANY 624 window (5 tested) "
           "predicts 300 future draws: OK")
 
