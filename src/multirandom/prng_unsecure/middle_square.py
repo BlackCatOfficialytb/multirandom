@@ -260,7 +260,8 @@ class MSWS64:
         self._x1, self._w1, self._x2, self._w2 = (int(v) & _M64 for v in state)
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("middle_square - von Neumann + Widynski MSWS self-check battery")
     print("=" * 70)
@@ -405,3 +406,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All middle_square checks passed!")
+
+
+if __name__ == "__main__":
+    main()

@@ -133,7 +133,9 @@ HASH_GENERATORS = [
     BLAKE2bRandom, BLAKE2sRandom, SHAKE128Random, SHAKE256Random,
 ]
 
-if __name__ == "__main__":
+
+
+def main():
     streams = {}
     for cls in HASH_GENERATORS:
         a = cls(42).randbytes(32)
@@ -165,3 +167,7 @@ if __name__ == "__main__":
     assert g2.randbytes(8) == expected
 
     print("All hash generator checks passed!")
+
+
+if __name__ == "__main__":
+    main()

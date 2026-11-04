@@ -573,7 +573,9 @@ REFERENCE_VECTORS = [
       6959129367028440372, 16822147227405758281]),
 ]
 
-if __name__ == "__main__":
+
+
+def main():
     for cls, seeds, expected in REFERENCE_VECTORS:
         gen = cls(seeds)
         got = [gen.roll() for _ in expected]
@@ -627,3 +629,7 @@ if __name__ == "__main__":
         print(f"{cls.__name__}: OK")
 
     print("All xorshift/xoshiro checks passed!")
+
+
+if __name__ == "__main__":
+    main()

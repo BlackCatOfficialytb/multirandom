@@ -94,7 +94,8 @@ class AnsiX931DRBG(_DrbgBase):
         self._aes = _Aes(self._key)
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("ansi_x931 - ANSI X9.31-AES128 self-check battery")
     print("=" * 70)
@@ -176,3 +177,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All ansi_x931 checks passed!")
+
+
+if __name__ == "__main__":
+    main()

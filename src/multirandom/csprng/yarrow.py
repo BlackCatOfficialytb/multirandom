@@ -105,7 +105,8 @@ class YarrowRandom(_DrbgBase):
         self._aes = _Aes(self._key_bytes + b"\x00" * 4)
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("yarrow - Yarrow-160 self-check battery")
     print("=" * 70)
@@ -188,3 +189,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All yarrow checks passed!")
+
+
+if __name__ == "__main__":
+    main()

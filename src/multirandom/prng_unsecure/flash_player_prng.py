@@ -350,7 +350,8 @@ KNOWN_VECTORS = {
 }
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("flash_player_prng - Flash Player Math.random() self-check battery")
     print("=" * 70)
@@ -477,3 +478,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All flash_player_prng checks passed!")
+
+
+if __name__ == "__main__":
+    main()

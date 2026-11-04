@@ -73,7 +73,8 @@ class HMAC_DRBG(_DrbgBase):
         self._k, self._v, self._reseed_counter = state
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("hmac_drbg - NIST SP 800-90A HMAC_DRBG self-check battery")
     print("=" * 70)
@@ -138,3 +139,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All hmac_drbg checks passed!")
+
+
+if __name__ == "__main__":
+    main()

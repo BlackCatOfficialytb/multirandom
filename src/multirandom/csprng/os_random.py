@@ -188,7 +188,8 @@ OS_GENERATORS = [
 ]
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("os_random - the OS-level CSPRNGs self-check battery")
     print("=" * 70)
@@ -231,3 +232,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All os_random checks passed!")
+
+
+if __name__ == "__main__":
+    main()

@@ -188,7 +188,8 @@ class PCG32:
         return gen
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("pcg - O'Neill's PCG32 self-check battery")
     print("=" * 70)
@@ -320,3 +321,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All pcg checks passed!")
+
+
+if __name__ == "__main__":
+    main()

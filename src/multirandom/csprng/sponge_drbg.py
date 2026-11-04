@@ -167,7 +167,8 @@ class SpongeDRBG(_DrbgBase):
         self._lanes = list(lanes)
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("sponge_drbg - Keccak-f[1600] sponge DRBG self-check battery")
     print("=" * 70)
@@ -246,3 +247,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All sponge_drbg checks passed!")
+
+
+if __name__ == "__main__":
+    main()

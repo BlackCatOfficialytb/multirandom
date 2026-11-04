@@ -132,7 +132,8 @@ class FortunaRandom(_DrbgBase):
         self._gaes = _Aes(self._gkey)
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("fortuna - Ferguson/Schneier Fortuna self-check battery")
     print("=" * 70)
@@ -218,3 +219,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All fortuna checks passed!")
+
+
+if __name__ == "__main__":
+    main()

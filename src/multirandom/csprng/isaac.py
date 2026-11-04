@@ -159,7 +159,8 @@ class ISAACRandom(_DrbgBase):
         self._rsl = list(rsl)
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("isaac - Bob Jenkins' ISAAC self-check battery")
     print("=" * 70)
@@ -230,3 +231,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All isaac checks passed!")
+
+
+if __name__ == "__main__":
+    main()

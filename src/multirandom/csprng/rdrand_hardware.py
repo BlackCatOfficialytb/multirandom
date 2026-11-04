@@ -285,7 +285,8 @@ class RDSEEDRandom(_HardwareRandom):
 HW_GENERATORS = [RDRANDRandom, RDSEEDRandom]
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("rdrand_hardware - the CPU entropy instructions self-check battery")
     print("=" * 70)
@@ -370,3 +371,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All rdrand_hardware checks passed!")
+
+
+if __name__ == "__main__":
+    main()

@@ -281,7 +281,8 @@ Dual_EC_DRBG._q_point = _ec_mul_point(
     Dual_EC_DRBG._SECRET_D, _P256_GX, _P256_GY, _P256_P, _P256_A)
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("dual_ec_drbg - the backdoored DRBG self-check battery")
     print("=" * 70)
@@ -347,3 +348,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All dual_ec_drbg checks passed!")
+
+
+if __name__ == "__main__":
+    main()

@@ -308,7 +308,8 @@ class JavaRandom(JavaLCG):
     wants to say "the Java random" instead of "the Java LCG"."""
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("lcg - LCGs + java.util.Random self-check battery")
     print("=" * 70)
@@ -426,3 +427,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All lcg checks passed!")
+
+
+if __name__ == "__main__":
+    main()

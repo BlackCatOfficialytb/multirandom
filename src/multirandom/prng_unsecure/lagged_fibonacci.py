@@ -197,7 +197,8 @@ class LaggedFibonacci:
         return gen
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("lagged_fibonacci - the lagged Fibonacci family self-check battery")
     print("=" * 70)
@@ -345,3 +346,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All lagged_fibonacci checks passed!")
+
+
+if __name__ == "__main__":
+    main()

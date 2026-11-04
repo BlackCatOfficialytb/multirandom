@@ -281,7 +281,8 @@ class V8XorShift128Plus:
         return gen
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("v8_xorshift128plus - V8's Math.random engine self-check battery")
     print("=" * 70)
@@ -452,3 +453,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All v8_xorshift128plus checks passed!")
+
+
+if __name__ == "__main__":
+    main()

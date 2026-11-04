@@ -173,7 +173,8 @@ class BlumBlumShub(_DrbgBase):
         self._n = self._p * self._q
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("blum_blum_shub - the factoring-hard generator self-check battery")
     print("=" * 70)
@@ -276,3 +277,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All blum_blum_shub checks passed!")
+
+
+if __name__ == "__main__":
+    main()

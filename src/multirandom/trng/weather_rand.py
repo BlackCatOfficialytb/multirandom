@@ -479,7 +479,8 @@ class RandomUsingOpenMeteoAPI(random.Random):
         self.seed_from_weather()
 
 
-if __name__ == "__main__":
+
+def main():
     api = OpenMeteoAPI(seed=1234)
 
     # --- offline: determinism, sensitivity, configurability of the fold ---
@@ -537,3 +538,7 @@ if __name__ == "__main__":
         assert 0 <= fallback < (1 << 512)
         print(f"Live weather fetch skipped ({type(exc).__name__}: {exc}); "
               "os.urandom fallback path OK")
+
+
+if __name__ == "__main__":
+    main()

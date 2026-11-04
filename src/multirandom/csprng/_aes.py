@@ -83,7 +83,8 @@ class _Aes:
         return bytes(out[:n])
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("_aes - FIPS-197 wiring self-check battery")
     print("=" * 70)
@@ -141,3 +142,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All _aes checks passed!")
+
+
+if __name__ == "__main__":
+    main()

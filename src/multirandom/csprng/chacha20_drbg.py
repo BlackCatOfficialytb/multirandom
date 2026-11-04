@@ -82,7 +82,8 @@ class ChaCha20DRBG(_DrbgBase):
         self._key, self._nonce, self._ctr = state
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("chacha20_drbg - RFC 8439 ChaCha20 DRBG self-check battery")
     print("=" * 70)
@@ -160,3 +161,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All chacha20_drbg checks passed!")
+
+
+if __name__ == "__main__":
+    main()

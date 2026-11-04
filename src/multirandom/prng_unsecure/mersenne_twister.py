@@ -328,7 +328,8 @@ def key_from_int(value: int) -> list[int]:
             return key
 
 
-if __name__ == "__main__":
+
+def main():
     import random
 
     print("=" * 70)
@@ -468,3 +469,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All mersenne_twister checks passed!")
+
+
+if __name__ == "__main__":
+    main()

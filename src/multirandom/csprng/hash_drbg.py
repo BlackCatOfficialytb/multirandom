@@ -83,7 +83,8 @@ class Hash_DRBG(_DrbgBase):
         self._v, self._c, self._reseed_counter = state
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("hash_drbg - NIST SP 800-90A Hash_DRBG self-check battery")
     print("=" * 70)
@@ -174,3 +175,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All hash_drbg checks passed!")
+
+
+if __name__ == "__main__":
+    main()

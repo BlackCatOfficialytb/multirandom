@@ -118,7 +118,8 @@ class CTR_DRBG(_DrbgBase):
         self._aes = _Aes(self._key)
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("ctr_drbg - NIST SP 800-90A CTR_DRBG self-check battery")
     print("=" * 70)
@@ -184,3 +185,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All ctr_drbg checks passed!")
+
+
+if __name__ == "__main__":
+    main()

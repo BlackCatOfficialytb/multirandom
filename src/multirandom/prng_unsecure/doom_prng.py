@@ -183,7 +183,8 @@ class DoomRandom:
         return gen
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("doom_prng - the Doom lookup-table generator self-check battery")
     print("=" * 70)
@@ -332,3 +333,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All doom_prng checks passed!")
+
+
+if __name__ == "__main__":
+    main()

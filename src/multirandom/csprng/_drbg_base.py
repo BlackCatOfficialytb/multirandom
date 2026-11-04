@@ -101,7 +101,8 @@ class _DrbgBase(random.Random):
         raise NotImplementedError
 
 
-if __name__ == "__main__":
+
+def main():
     # The generic seedable-DRBG battery: swept over every concrete DRBG the
     # package ships.  Behaviour-specific checks (KATs, pool gates, the
     # backdoor demo...) live in each generator's own module battery.
@@ -159,3 +160,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All _drbg_base checks passed!")
+
+
+if __name__ == "__main__":
+    main()

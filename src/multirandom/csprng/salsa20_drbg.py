@@ -82,7 +82,8 @@ class Salsa20DRBG(_DrbgBase):
         self._key, self._nonce, self._ctr = state
 
 
-if __name__ == "__main__":
+
+def main():
     print("=" * 70)
     print("salsa20_drbg - DJB Salsa20 core DRBG self-check battery")
     print("=" * 70)
@@ -145,3 +146,7 @@ if __name__ == "__main__":
 
     print("-" * 70)
     print("All salsa20_drbg checks passed!")
+
+
+if __name__ == "__main__":
+    main()
