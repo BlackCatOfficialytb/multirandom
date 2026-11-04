@@ -192,9 +192,115 @@ rounds, target)` verifies candidates the way the exploit does.
 working Flash Player PRNG and its reversal attacks live in
 `flash_player_prng.py` above.
 
+## IBM's RANDU — `randu`
+
+The most infamous PRNG ever shipped: `x' = 65539 * x mod 2^31` with
+65539 = 2^16 + 3, so triples `(x1, x2, x3)` satisfy
+`x3 == 6*x2 - 9*x1 (mod 2^31)` and collapse onto 15 parallel planes —
+Marsaglia's "random numbers fall mainly in the planes" (1968). One output
+recovers the previous state (and the seed) via the modular multiplicative
+inverse.
+
+```python
+from multirandom.prng_unsecure.randu import RANDU
+
+gen = RANDU(seed=1)
+clone = RANDU.from_outputs([gen.roll()])   # one draw is one full recovery
+```
+
+## Middle Square — `middle_square`
+
+Von Neumann's 1949 proposal: square the seed, keep the middle digits. It
+degenerates to zero (and short cycles) quickly — which is the lesson — plus
+the modern MSWS (middle square Weyl sequence) variant that actually works.
+
+## Doom — `doom_prng`
+
+The generator behind every shotgun spread in Doom (1993): one 256-byte
+lookup table (transcribed verbatim from Id's `m_random.c`) and an index that
+walks it, increment first. Period exactly 256; the table is not even a
+permutation. `P_SubRandom()` is the source's own `P_Random() - P_Random()`
+spread — which, eating two draws per call, only ever visits even indexes and
+carries an exact ±12.171875 mean bias. One observed draw pins the index to
+the table positions containing that byte; `from_outputs` refuses ambiguous
+leaks instead of guessing.
+
+```python
+from multirandom.prng_unsecure.doom_prng import DoomRandom
+
+doom = DoomRandom()
+doom.P_Random()                       # 8 — rndtable[1], increment-then-index
+clone = DoomRandom.from_outputs([8, 109, 220])
+```
+
+## SplitMix64 — `splitmix64`
+
+Steele, Lea & Flood's counter-based mixer (the recommended seeding engine of
+the xoshiro family): a golden-ratio counter through two multiply-xorshift
+rounds. A pure counter under a known mixer — the n-th output is computable
+directly as `splitmix64_mix(s0 + n * 0x9E3779B97F4A7C15)`, and `from_outputs`
+inverts the mixer exactly from one observed word.
+
+```python
+from multirandom.prng_unsecure.splitmix64 import SplitMix64
+
+sim = SplitMix64(0)
+sim.next_u64()        # 16294208416658607535 — the canonical seed-0 stream
+clone = SplitMix64.from_outputs([0xE220A83976B7AF3D])
+```
+
+## Lagged Fibonacci — `lagged_fibonacci`
+
+The family inside BSD libc's `random()`: `w[i] = w[i-j] ± w[i-k] mod 2^32`,
+preset to the BSD-style LF(31, 3) with a MINSTD (16807) warmup filling the
+state. The additive structure leaves the state naked: the last `j`
+consecutive full-width outputs ARE the current state, in generation order.
+
+```python
+from multirandom.prng_unsecure.lagged_fibonacci import LaggedFibonacci
+
+gen = LaggedFibonacci("seed")             # LF(31, 3), MINSTD warmup
+clone = LaggedFibonacci.from_outputs([gen.roll() for _ in range(31)])
+```
+
+## PCG32 — `pcg`
+
+Melissa O'Neill's PCG32 (2014): a 64-bit LCG with a 64-bit stream id under
+the XSH-RR output permutation. Statistically excellent — and still listed
+unsecure, because the core is affine and the seed is recoverable in practice.
+The honest catch is documented in the module: `from_outputs` is deliberately
+absent (the permutation hides 32 state bits per draw, ~2^32 brute force per
+word); what IS provided is `from_state` for leaked raw state and a
+closed-form `jump()` that skips a billion outputs in one multiply.
+
+```python
+from multirandom.prng_unsecure.pcg import PCG32
+
+g = PCG32(seed=42, seq=54)      # the Rosetta Code vector
+g.jump(1_000_000_000)           # a billion outputs, one call
+```
+
+## V8's Math.random — `v8_xorshift128plus`
+
+The xorshift128+ engine behind `Math.random()` in Chromium and Node: two
+64-bit words, all shifts and xors, with V8's exact `ToDouble` (the new
+state0's low 52 mantissa bits on the [1, 2) exponent). Successive floats
+expose the low 52 bits of successive state words — every bit a linear
+function over GF(2) — so five consecutive `Math.random` outputs are 260
+linear equations. `from_outputs` runs the step symbolically on 128
+bit-masks, Gaussian-eliminates, and hands back the exact generator.
+
+```python
+from multirandom.prng_unsecure.v8_xorshift128plus import V8XorShift128Plus
+
+v8 = V8XorShift128Plus(seed="demo")
+clone = V8XorShift128Plus.from_outputs([v8.random() for _ in range(5)])
+assert clone.getstate() == v8.getstate()   # Math.random, predicted exactly
+```
+
 ## Where to go next
 
 - [Cryptographic randomness (`csprng`)](csprng.md) — what to use where it matters
-- [Self-checks](self-checks.md) — `py -3 -m multirandom.prng_unsecure.xor_shift` verifies all
-  18 generators; `...mersenne_twister` clones MT19937; `...flash_player_prng` runs the real
-  CVE-2017-3000 attack
+- [Self-checks](self-checks.md) — every module ships its own assert battery:
+  `py -3 -m multirandom.prng_unsecure.v8_xorshift128plus` solves Math.random
+  live; `...doom_prng` replays the lookup table; `...pcg` races the jump.

@@ -19,8 +19,8 @@ Deep-dive docs live in [`docs/`](docs/):
 |---|---|
 | [Getting started](docs/getting-started.md) | installation, quickstart, which generator to pick |
 | [True randomness (`trng`)](docs/trng.md) | mouse clicks, quantum APIs, microphone, weather |
-| [Cryptographic randomness (`csprng`)](docs/csprng.md) | OS CSPRNGs, NIST DRBGs, the Dual_EC backdoor demo, Fortuna/ISAAC |
-| [Unsecure PRNGs (`prng_unsecure`)](docs/prng_unsecure.md) | XorShift/Xoshiro, LCGs, and their reversal attacks |
+| [Cryptographic randomness (`csprng`)](docs/csprng.md) | OS CSPRNGs, NIST DRBGs, the Dual_EC backdoor demo, Keccak sponge, Blum Blum Shub, RDRAND |
+| [Unsecure PRNGs (`prng_unsecure`)](docs/prng_unsecure.md) | XorShift/Xoshiro, LCGs, Doom, PCG32, V8's Math.random, and their reversal attacks |
 | [Self-checks](docs/self-checks.md) | the assert batteries verifying every generator |
 
 ---
@@ -37,14 +37,30 @@ multirandom/
         │   ├── rand_using_real_random.py # Microphone entropy (real-random)
         │   └── weather_rand.py           # Open-Meteo weather entropy (large unhashed seeds)
         ├── csprng/             # Cryptographically Strong Randomness
-        │   ├── secure_rand.py            # OS CSPRNGs, NIST DRBGs, Fortuna/Yarrow, ISAAC
+        │   ├── os_random.py              # OS CSPRNGs (secrets, urandom, getrandom, BCrypt, SecRandom)
+        │   ├── ctr_drbg.py / hmac_drbg.py / hash_drbg.py   # NIST SP 800-90A DRBGs
+        │   ├── dual_ec_drbg.py           # the backdoored DRBG, live
+        │   ├── chacha20_drbg.py / salsa20_drbg.py          # stream-cipher DRBGs
+        │   ├── fortuna.py / yarrow.py / isaac.py           # pools and the classics
+        │   ├── sponge_drbg.py            # Keccak-f[1600] sponge DRBG (from scratch)
+        │   ├── ansi_x931.py              # ANS X9.17/X9.31, the banking generator
+        │   ├── blum_blum_shub.py         # factoring-hard, one bit per squaring
+        │   ├── rdrand_hardware.py        # RDRAND / RDSEED CPU instructions
+        │   ├── _aes.py                   # the library AES (FIPS-197 KATs)
         │   ├── sha_rand.py               # MD5, SHA-1/2/3, BLAKE2, SHAKE PRNGs
         │   └── original_random.py        # Wrapper for Python's built-in random
         └── prng_unsecure/      # Mathematical Randomness (UNSECURE PRNGs)
             ├── xor_shift.py              # XorShift & Xoshiro Family
             ├── mersenne_twister.py       # MT19937 + the 624-output clone attack
             ├── lcg.py                    # Linear Congruential Generators (LCGs)
-            └── flash_player_prng.py      # Flash Player Math.random() + its reversal attacks
+            ├── flash_player_prng.py      # Flash Player Math.random() + its reversal attacks
+            ├── randu.py                  # IBM's RANDU, the 15-planes generator
+            ├── middle_square.py          # von Neumann's middle square + MSWS
+            ├── doom_prng.py              # Doom's 256-entry lookup table
+            ├── splitmix64.py             # SplitMix64, inverted exactly
+            ├── lagged_fibonacci.py       # BSD-style LF(31, 3); last j outputs = state
+            ├── pcg.py                    # O'Neill's PCG32, closed-form jump
+            └── v8_xorshift128plus.py     # Math.random()'s engine + the GF(2) seed solve
 ```
 
 ---
@@ -91,7 +107,31 @@ Run `python -m multirandom.prng_unsecure.xor_shift` to check every generator aga
 ### 4. Mathematical LCGs (`prng_unsecure`)
 Classic Linear Congruential Generators with customizable shift parameters. Includes `reverse_roll()` methods to demonstrate the insecurity of simple modular arithmetic.
 
-### 5. Hash-based Generators (`csprng`)
+### 5. Iconic & historic PRNGs (`prng_unsecure`)
+The famous, the infamous, and the ones running inside your favourite games —
+each module ships its reference vectors and its own reversal.
+
+- **IBM's RANDU** (`randu`): the 15-planes generator; one output recovers the seed via the modular inverse of 65539.
+- **Middle Square** (`middle_square`): von Neumann's 1949 idea, plus the MSWS variant.
+- **Doom's RNG** (`doom_prng`): the 256-entry lookup table behind every shotgun spread, increment-then-index; one draw pins the index.
+- **SplitMix64** (`splitmix64`): the seeding engine behind xoshiro; the mixer is inverted exactly from one output.
+- **Lagged Fibonacci** (`lagged_fibonacci`): the BSD `random()`-style LF(31, 3); the last j outputs ARE the state.
+- **PCG32** (`pcg`): O'Neill's permutation-on-an-LCG — the "good" end, with a closed-form `jump()` for a billion outputs in one call.
+- **V8's XorShift128+** (`v8_xorshift128plus`): JavaScript's `Math.random()` engine; five consecutive doubles recover the exact 128-bit seed by GF(2) elimination.
+
+```python
+from multirandom.prng_unsecure.doom_prng import DoomRandom
+from multirandom.prng_unsecure.v8_xorshift128plus import V8XorShift128Plus
+
+doom = DoomRandom()
+doom.P_Random()                     # the same table the game rolls
+
+v8 = V8XorShift128Plus(seed="demo")
+clone = V8XorShift128Plus.from_outputs([v8.random() for _ in range(5)])
+clone.getstate() == v8.getstate()   # True: Math.random, predicted exactly
+```
+
+### 6. Hash-based Generators (`csprng`)
 Counter-mode hash DRBGs: `H(seed || counter)` drives the full `random.Random` API.
 
 - **SHA-2**: SHA-224, SHA-256, SHA-384, SHA-512
@@ -107,7 +147,7 @@ gen = BLAKE2bRandom("my seed")
 print(gen.randbytes(16).hex(), gen.random(), gen.choice(["a", "b"]))
 ```
 
-### 6. Cryptographically Strong Generators (`csprng/secure_rand`)
+### 7. Cryptographically Strong Generators (`csprng`)
 The ones to actually guard things with, plus deliberately broken ones that teach.
 
 **OS-level CSPRNGs** (live entropy, behave like `random.SystemRandom` — seeding
@@ -132,14 +172,23 @@ the native API is not reachable on the running platform.
 - `Hash_DRBG` – SHA-256 with Hash_df (440-bit state)
 - `Dual_EC_DRBG` — *deliberately backdoored*, kept as a teaching exhibit
 
-**Stream / accumulator designs**: `ChaCha20DRBG`, `Salsa20DRBG` (counter-mode
-DRBGs on the two classic stream ciphers), `FortunaRandom` (32 seed pools +
-AES-256-CTR, rekey every 65536 blocks, `add_entropy(data, pool)`) and its
-legacy predecessor `YarrowRandom` (fast/slow pools, AES-192-CTR), plus
-`ISAACRandom` (Bob Jenkins' ISAAC, validated against his reference vectors).
+**Stream / accumulator / sponge designs**: `ChaCha20DRBG`, `Salsa20DRBG`
+(counter-mode DRBGs on the two classic stream ciphers), `FortunaRandom`
+(32 seed pools + AES-256-CTR, rekey every 65536 blocks,
+`add_entropy(data, pool)`) and its legacy predecessor `YarrowRandom`
+(fast/slow pools, AES-192-CTR), `ISAACRandom` (Bob Jenkins' ISAAC, validated
+against his reference vectors), `SpongeDRBG` (a sponge-mode DRBG on a
+hand-transcribed Keccak-f[1600], pinned against `hashlib`), and
+`AnsiX931DRBG` (the banking world's ANS X9.17/X9.31 generator).
+
+**Factoring-hard and hardware**: `BlumBlumShub`
+(x' = x² mod n — one provably factoring-hard bit per squaring, genuine Blum
+primes enforced by a self-contained Miller-Rabin) and the CPU's own entropy
+instructions `RDRANDRandom` / `RDSEEDRandom` (x86-64 shellcode through
+ctypes, probed availability).
 
 ```python
-from multirandom.csprng.secure_rand import SecretsRandom, CTR_DRBG, Dual_EC_DRBG
+from multirandom.csprng import SecretsRandom, CTR_DRBG, Dual_EC_DRBG
 
 gen = SecretsRandom()
 print(gen.token_hex(32))            # live kernel entropy
@@ -174,7 +223,7 @@ module ships with this demo running in its own self-checks at
 `truncate_bits=8`. It warns on first use. Never use it for real randomness.
 
 ```python
-# Run its assert battery: python -m multirandom.csprng.secure_rand
+# Run the DRBG sweep: python -m multirandom.csprng._drbg_base
 ```
 
 ### The global unsecure-prng warning switch
@@ -196,7 +245,7 @@ multirandom.ignore_unsecure_prng_warning_do_not_set_to_true_unless_you_know_how_
 
 ### Requirements
 - Python 3.9+
-- Dependencies listed in `requirements.txt` (e.g., `pyautogui`, `aiohttp`)
+- Dependencies listed in `requirements.txt` (e.g., `pyautogui`, `aiohttp`, `pycryptodome`)
 
 ### Installation
 ```bash

@@ -3,7 +3,7 @@
 ## Requirements
 
 - Python 3.9+
-- Core dependencies (installed automatically with pip): `aiohttp`, `pyautogui`, `geopy`
+- Core dependencies (installed automatically with pip): `aiohttp`, `pyautogui`, `geopy`, `pycryptodome`
 - Optional: the [microphone extra](#optional-extras) for `trng.rand_using_real_random`
 
 ## Installation
@@ -37,10 +37,11 @@ pip install "multirandom[microphone]"   # adds real-random (ambient audio entrop
 
 | You need... | Use | Module |
 |---|---|---|
-| Anything that must stay secret | `SecretsRandom` | `csprng.secure_rand` |
-| A seedable, reproducible crypto stream | `CTR_DRBG`, `ChaCha20DRBG`, `FortunaRandom` | `csprng.secure_rand` |
-| Live OS entropy behind `random.Random` | `BCryptGenRandomRandom` (Windows), `GetRandomRandom` (Linux), ... | `csprng.secure_rand` |
+| Anything that must stay secret | `SecretsRandom` | `csprng.os_random` |
+| A seedable, reproducible crypto stream | `CTR_DRBG`, `ChaCha20DRBG`, `FortunaRandom` | `csprng.ctr_drbg` / `csprng.chacha20_drbg` / `csprng.fortuna` |
+| Live OS entropy behind `random.Random` | `BCryptGenRandomRandom` (Windows), `GetRandomRandom` (Linux), ... | `csprng.os_random` |
 | Deterministic hashing of a seed | `SHA256Random`, `BLAKE2bRandom`, ... | `csprng.sha_rand` |
+| The CPU's own entropy chip | `RDRANDRandom`, `RDSEEDRandom` | `csprng.rdrand_hardware` |
 | Entropy from the real world | `MicrophoneRandom`, `RandomUsingOpenMeteoAPI`, online APIs | `trng.*` |
 | Human-in-the-loop seeding | `RealRandomUsingBetweenMixedClicks` | `trng.rand_via_clicks` |
 | Fast, game-grade pseudo-randomness | `Xoshiro256PlusPlus`, `Xoshiro128StarStar`, ... | `prng_unsecure.xor_shift` |
@@ -55,7 +56,7 @@ pip install "multirandom[microphone]"   # adds real-random (ambient audio entrop
 ## Quickstart
 
 ```python
-from multirandom.csprng.secure_rand import SecretsRandom, CTR_DRBG
+from multirandom.csprng import SecretsRandom, CTR_DRBG
 
 gen = SecretsRandom()
 print(gen.token_hex(32))            # live kernel entropy, 64 hex chars

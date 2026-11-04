@@ -7,34 +7,40 @@ seed-sensitive, state-restorable where promised, and statistically sane.
 ## Cryptographic package
 
 ```bash
-py -3 -m multirandom.csprng.secure_rand          # (PYTHONPATH=src, or after pip install)
+py -3 -m multirandom.csprng._drbg_base           # (PYTHONPATH=src, or after pip install)
+py -3 -m multirandom.csprng._aes                 # FIPS-197 known-answer tests
 py -3 -m multirandom.csprng.sha_rand
 ```
 
-`secure_rand` verifies, in order:
+`_drbg_base` sweeps every seedable DRBG; `_aes` verifies the library AES
+against FIPS-197. Each generator module also runs its own battery, e.g.:
 
-1. **AES known-answer tests** — FIPS-197 vectors for 128/192/256-bit keys
-   (the miniature AES is built from its definition, not a typed-in S-box)
-2. **ISAAC reference state** — Jenkins' all-zero-state check
-   (`aa=d4d3f473`, `bb=902c0691`, `cc=10` after ten calls)
-3. **P-256 sanity** — generator on the curve, `Q = d*P` on the curve,
-   `(n-1)*G = -G`
-4. **the global warning flag** — warnings show when `False`, stay silent when
-   `True`
-5. **the DRBG battery** — for every seedable generator
+```bash
+py -3 -m multirandom.csprng.sponge_drbg          # Keccak-f[1600] pinned vs hashlib
+py -3 -m multirandom.csprng.ansi_x931            # hand-computed X9.31 triples
+py -3 -m multirandom.csprng.blum_blum_shub       # the textbook n = 11*19 example
+py -3 -m multirandom.csprng.rdrand_hardware      # skipped where the CPU can't execute
+```
+
+The DRBG sweep verifies, in order:
+
+1. **the DRBG battery** — for every seedable generator
    (`CTR_DRBG`, `HMAC_DRBG`, `Hash_DRBG`, `Dual_EC_DRBG`, `ChaCha20DRBG`,
-   `Salsa20DRBG`, `FortunaRandom`, `YarrowRandom`, `ISAACRandom`):
+   `Salsa20DRBG`, `FortunaRandom`, `YarrowRandom`, `ISAACRandom`,
+   `SpongeDRBG`, `AnsiX931DRBG`):
    - deterministic for a fixed seed
    - sensitive to a different seed
    - `getstate()`/`setstate()` round-trip
    - `getrandbits(k)` in range; `random()` in `[0, 1)`; `choice()`
    - bit balance over 8 KB of output
-6. **`Dual_EC_DRBG` specifics** — small-truncation battery, then the backdoor
+2. **`Dual_EC_DRBG` specifics** — small-truncation battery, then the backdoor
    demonstrated live: `reveal()` recovers the next state from one block, and
    the predictor reproduces the following blocks
-7. **the OS-level sources** — `SecretsRandom`, `OSURandom`, `GetRandomRandom`,
+3. **the OS-level sources** — `SecretsRandom`, `OSURandom`, `GetRandomRandom`,
    `BCryptGenRandomRandom`, `SecRandomCopyBytesRandom`: two draws differ,
    bits balanced, and state restoration correctly refused
+4. **the global warning flag** — warnings show when `False`, stay silent when
+   `True`
 
 `sha_rand` verifies all 14 hash generators: fixed-seed determinism, seed
 sensitivity, distinct streams across hashes, `random()`/`getrandbits()`
@@ -123,7 +129,8 @@ py -3 -m multirandom.trng.weather_rand
   the raw output bits
 
 > [!TIP]
-> Run the two csprng batteries after touching `csprng/`, and `xor_shift`
+> Run `multirandom.csprng._drbg_base` (and `sha_rand`) after touching
+> `csprng/`, and `xor_shift`
 > after touching generator `__init__`s — the batteries introspect signatures
 > and would notice.
 

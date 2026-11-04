@@ -52,14 +52,30 @@ multirandom/
         │   ├── rand_using_real_random.py # Microphone entropy (real-random, optional extra)
         │   └── weather_rand.py           # Open-Meteo weather-based entropy
         ├── csprng/             # Cryptographically Strong Randomness
-        │   ├── secure_rand.py            # OS CSPRNGs, NIST DRBGs, Fortuna/Yarrow, ISAAC
+        │   ├── os_random.py              # OS CSPRNGs (secrets, urandom, getrandom, BCrypt, SecRandom)
+        │   ├── ctr_drbg.py / hmac_drbg.py / hash_drbg.py   # NIST SP 800-90A
+        │   ├── dual_ec_drbg.py           # the backdoored DRBG, live
+        │   ├── chacha20_drbg.py / salsa20_drbg.py          # stream-cipher DRBGs
+        │   ├── fortuna.py / yarrow.py / isaac.py           # pools and the classics
+        │   ├── sponge_drbg.py            # Keccak-f[1600] sponge DRBG (from scratch)
+        │   ├── ansi_x931.py              # ANS X9.17/X9.31, the banking generator
+        │   ├── blum_blum_shub.py         # factoring-hard, one bit per squaring
+        │   ├── rdrand_hardware.py        # RDRAND / RDSEED CPU instructions
+        │   ├── _aes.py                   # the library AES (FIPS-197 KATs)
         │   ├── sha_rand.py               # MD5, SHA-1/2/3, BLAKE2, SHAKE hash DRBGs
         │   └── original_random.py        # Passthrough wrapper for random.Random
         └── prng_unsecure/      # UNSECURE mathematical PRNGs
             ├── xor_shift.py              # XorShift & Xoshiro family (18 generators)
             ├── mersenne_twister.py       # MT19937 + the 624-output clone attack
             ├── lcg.py                    # Linear Congruential Generators (LCGs)
-            └── flash_player_prng.py      # Flash Player Math.random() + its reversal attacks
+            ├── flash_player_prng.py      # Flash Player Math.random() + its reversal attacks
+            ├── randu.py                  # IBM's RANDU, the 15-planes generator
+            ├── middle_square.py          # von Neumann's middle square + MSWS
+            ├── doom_prng.py              # Doom's 256-entry lookup table
+            ├── splitmix64.py             # SplitMix64, inverted exactly
+            ├── lagged_fibonacci.py       # BSD-style LF(31, 3); last j outputs = state
+            ├── pcg.py                    # O'Neill's PCG32, closed-form jump
+            └── v8_xorshift128plus.py     # Math.random()'s engine + the GF(2) seed solve
 ```
 
 ## License
