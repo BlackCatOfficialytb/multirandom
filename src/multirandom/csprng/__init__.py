@@ -27,7 +27,16 @@ Cryptographically strong randomness ("csprng") -- one module per method:
    :class:`FortunaRandom` (``fortuna``) and its legacy predecessor
    :class:`YarrowRandom` (``yarrow``), plus :class:`ISAACRandom`
    (``isaac`` - Bob Jenkins' ISAAC, transcribed from the author's
-   ``readable.c``).
+   ``readable.c``) and :class:`SpongeDRBG` (``sponge_drbg`` - a sponge-mode
+   DRBG on a from-scratch Keccak-f[1600], KAT-pinned against ``hashlib``).
+
+4. The classics: :class:`AnsiX931DRBG` (``ansi_x931`` - ANS X9.17/X9.31,
+   the banking-world generator) and :class:`BlumBlumShub`
+   (``blum_blum_shub`` - one provably factoring-hard bit per squaring).
+
+5. The CPU's own entropy instructions (``rdrand_hardware``): the
+   :class:`RDRANDRandom` and :class:`RDSEEDRandom` hardware TRNGs, run
+   through x64 shellcode stubs - probed, never assumed.
 
 Every DRBG class is a ``random.Random`` subclass, so ``.random()``,
 ``.randint()``, ``.choice()``, ``.shuffle()`` ... all work on top of the
@@ -63,21 +72,33 @@ from .salsa20_drbg import Salsa20DRBG
 from .fortuna import FortunaRandom
 from .yarrow import YarrowRandom
 from .isaac import ISAACRandom
+from .sponge_drbg import SpongeDRBG
+from .ansi_x931 import AnsiX931DRBG
+from .blum_blum_shub import BlumBlumShub
+from .rdrand_hardware import RDRANDRandom, RDSEEDRandom
 
 DRBG_GENERATORS = [
     CTR_DRBG, HMAC_DRBG, Hash_DRBG, Dual_EC_DRBG,
     ChaCha20DRBG, Salsa20DRBG, FortunaRandom, YarrowRandom, ISAACRandom,
+    SpongeDRBG, AnsiX931DRBG,
 ]
+# BlumBlumShub is deliberately absent: its constructor demands the Blum
+# prime pair (it is not a seed-only DRBG), so the generic seedable-DRBG
+# sweep cannot construct it.  It ships its own battery instead.
 
 OS_GENERATORS = [
     SecretsRandom, OSURandom, GetRandomRandom,
     BCryptGenRandomRandom, SecRandomCopyBytesRandom,
 ]
 
+HW_GENERATORS = [RDRANDRandom, RDSEEDRandom]
+
 __all__ = [
     "SecretsRandom", "OSURandom", "GetRandomRandom",
     "BCryptGenRandomRandom", "SecRandomCopyBytesRandom",
     "CTR_DRBG", "HMAC_DRBG", "Hash_DRBG", "Dual_EC_DRBG",
     "ChaCha20DRBG", "Salsa20DRBG", "FortunaRandom", "YarrowRandom", "ISAACRandom",
-    "DRBG_GENERATORS", "OS_GENERATORS",
+    "SpongeDRBG", "AnsiX931DRBG", "BlumBlumShub",
+    "RDRANDRandom", "RDSEEDRandom",
+    "DRBG_GENERATORS", "OS_GENERATORS", "HW_GENERATORS",
 ]
